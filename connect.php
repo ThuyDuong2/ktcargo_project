@@ -12,7 +12,7 @@ if(isset($_POST['customerID'])){
   $usa = $_POST['usa'];
   $state = $_POST['state'];
   $zip = $_POST['zip'];
-  
+
   $phone = $_POST['phone'];
   $weight = $_POST['weight'];
   $trackingNumber = $_POST['trackingNumber'];
@@ -35,15 +35,15 @@ $conn = new mysqli($servername, $username, $password,$database);
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
-else {
+
     $pstmt = $conn->prepare("insert into customer(customerID, fname, lname, Address, Phone, packageWeight) value(?,?,?,?,?,?)");
     $pstmt ->bind_param("sssssd",$customerID, $firstName, $lastName, $customerAddress, $phone,$weight);
     $pstmt ->execute();
-    
+
     echo "Register successfully";
     $pstmt ->close();
     $conn ->close();
-}
+
 
 
 ?>
