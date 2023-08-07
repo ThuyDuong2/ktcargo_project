@@ -1,4 +1,5 @@
 # ktcargo_project
+<br>
 ## About
 - KTCargo Project is an application showcasing the practical application of advanced database management concepts. Through meticulously designed EER diagrams, relational diagrams, and SQL statements, this project brings to life the knowledge acquired in our classes.
 
@@ -16,6 +17,7 @@
   * AREA Superclass: Defines core attributes like tracking number, receiver, normal price, commercial price, and region.
   * Subclasses (EU, UK, VietNam): Inherit attributes from the AREA superclass, providing a structured and extensible foundation.
 - The KTCargo Project not only demonstrates the practical implementation of advanced database techniques but also offers a sophisticated solution for a streamlined shipping business, fostering enhanced efficiency and management.
+<br>
 
 ## Dependences:
 * Backend: PHP
@@ -24,8 +26,9 @@
 * Database: MySQL 5.6
 * Integrated Development Environment: Visual Studio
 * Version Control: Git
+<br>
 ## System Diagrams:
  * Relational Diagram:
- ![My Image](/image/relationalDiagram.jpg)
+ ![Relational Diagram](/images/relationalDiagram.jpg)
  * EER Diagram
- ![My Image](/image/EERDagram.jpg)
+ ![EER Diagram](/images/EERDiagram.jpg)
