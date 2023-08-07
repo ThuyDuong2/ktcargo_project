@@ -1,7 +1,7 @@
 # ktcargo_project
 
 ## About
-- KTCargo Project is an application showcasing the practical application of advanced database management concepts. Through meticulously designed EER diagrams, relational diagrams, and SQL statements, this project brings to life the knowledge acquired in our classes.
+- KTCargo Project is an application showcasing the practical application of advanced database management concepts. Through meticulously designed EER diagrams, relational diagrams, SQL statements, and so on. This project brings to life the knowledge acquired in our classes.
 
 - Our primary goal is to create a robust web platform and database for a small yet efficient shipping business that operates seamlessly between the USA, Vietnam, and Europe. The administrative interface empowers users to effortlessly manage customer information, encompassing names, addresses, and contact details. Furthermore, the database intelligently captures crucial shipping and receiving dates, alongside uniquely generated tracking numbers.
 
