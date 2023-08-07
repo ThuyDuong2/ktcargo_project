@@ -1,0 +1,146 @@
+-- PART2
+-- USE MYSQL 5.7
+
+CREATE TABLE CUSTOMER (
+customerID 		CHAR(9),
+fname 	 		VARCHAR(20)	NOT NULL,
+lname 	 		VARCHAR(20) ,
+Address	 		VARCHAR(100)	NOT NULL,
+Phone	 		CHAR(12),
+PRIMARY KEY (customerID));
+
+CREATE TABLE LOCATION (
+trackingNum 	     CHAR(20),
+receiverName	     VARCHAR(50) NOT NULL,
+receiverAddress	VARCHAR(100) NOT NULL,
+region 		     ENUM('UK', 'EU', 'VIETNAM'),
+cityOrcountry       VARCHAR(20),
+price 		     DECIMAL(10,2),
+PRIMARY KEY(trackingNum)
+);
+
+CREATE TABLE SHIPPING (
+customerID 		CHAR(9),
+trackingNum 		CHAR(20),
+shipDate	 		DATE,
+deliveryDate		DATE,
+packageWeight		DECIMAL(10,1),
+PRIMARY KEY(customerID, trackingNum),
+FOREIGN KEY(customerID) REFERENCES CUSTOMER(customerID),
+FOREIGN KEY(trackingNum) REFERENCES LOCATION(trackingNum)
+);
+
+CREATE TABLE UK (
+trackingNum  		CHAR(20),
+county			VARCHAR(20),
+PRIMARY KEY(trackingNum),
+FOREIGN KEY(trackingNum) REFERENCES LOCATION(trackingNum));
+
+CREATE TABLE EU (
+trackingNum  		CHAR(20),
+country			VARCHAR(20),
+PRIMARY KEY(trackingNum),
+FOREIGN KEY(trackingNum) REFERENCES LOCATION(trackingNum));
+
+CREATE TABLE VIETNAM (
+trackingNum  		CHAR(20),
+province			VARCHAR(20),
+PRIMARY KEY(trackingNum),
+FOREIGN KEY(trackingNum) REFERENCES LOCATION(trackingNum));
+
+
+-- PART 3- create name query
+CREATE VIEW UK_VIEW AS
+SELECT trackingNum,receiverName,receiverAddress,region, price
+FROM LOCATION
+WHERE region = 'UK';
+
+CREATE VIEW EU_VIEW AS
+SELECT trackingNum,receiverName, receiverAddress, region, price
+FROM LOCATION
+WHERE region = 'EU';
+
+-- PART 4 create materialized view
+CREATE TABLE VIETNAM_VIEW
+SELECT trackingNum ,receiverName, receiverAddress, region, price
+FROM LOCATION
+WHERE region = 'VIETNAM';
+
+
+DELIMITER $$
+CREATE TRIGGER VNV_INSERT
+	BEFORE INSERT ON LOCATION
+    FOR EACH ROW
+    BEGIN
+		IF NEW.region = 'VIETNAM' THEN
+		 INSERT INTO VIETNAM_VIEW (trackingNum ,receiverName, receiverAddress, region, price)
+		 VALUE(NEW.trackingNum ,NEW.receiverName, NEW.receiverAddress, NEW.region, NEW.price);
+        END IF;
+    END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER VNV_DELETE
+	BEFORE DELETE ON LOCATION
+	FOR EACH ROW
+	BEGIN
+		IF OLD.region = 'VIETNAM' THEN
+			DELETE FROM VIETNAM_VIEW WHERE trackingNum = OLD.trackingNum;
+		END IF;
+	END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER VNV_UPDATE
+	BEFORE UPDATE ON LOCATION
+	FOR EACH ROW
+	BEGIN
+		IF NEW.region = 'VIETNAM' THEN
+			IF OLD.REGION <> 'VIETNAM' THEN
+				INSERT INTO VIETNAM_VIEW (trackingNum ,receiverName, receiverAddress, region, price)
+				VALUE(NEW.trackingNum ,NEW.receiverName, NEW.receiverAddress, NEW.region, NEW.price);
+			ELSE
+				IF OLD.trackingNum <> NEW.trackingNum THEN
+					DELETE FROM VIETNAM_VIEW WHERE trackingNum = OLD.trackingNum;
+					INSERT INTO VIETNAM_VIEW (trackingNum ,receiverName, receiverAddress, region, price)
+					VALUE(NEW.trackingNum ,NEW.receiverName, NEW.receiverAddress, NEW.region, NEW.price);
+				ELSE
+                     UPDATE VIETNAM_VIEW SET receiverName = NEW.receiverName,
+                                             receiverAddress = NEW.receiverAddress,
+                                             region = NEW.region,
+                                             price = NEW.price
+                      WHERE trackingNum = NEW.trackingNum;
+				END IF;
+			END IF;
+		ELSEIF OLD.region = 'VIETNAM' THEN
+			DELETE FROM VIETNAM_VIEW
+			WHERE trackingNum = OLD.trackingNum;
+		END IF;
+	END $$
+DELIMITER ;
+
+
+-- part 5  create the totalprice function of each region
+DELIMITER $$
+CREATE FUNCTION TOTALPRICE(Loc CHAR(10)) RETURNS DECIMAL(9,2)
+BEGIN
+	DECLARE total DECIMAL(9,2) DEFAULT 0;
+	IF Loc = 'VIETNAM' or Loc = 'UK' or Loc = 'EU'  THEN
+		SET total = (SELECT SUM(price)
+					  FROM CUSTOMER JOIN SHIPPING ON CUSTOMER.customerID = SHIPPING.customerID
+					  JOIN LOCATION ON SHIPPING.trackingNum = LOCATION.trackingNum
+			          WHERE region = Loc);
+
+	ELSEIF Loc = 'other' THEN
+		SET total = (SELECT SUM(price)
+                     FROM CUSTOMER JOIN SHIPPING ON   CUSTOMER.customerID = SHIPPING.customerID
+                     JOIN LOCATION ON SHIPPING.trackingNum = LOCATION.trackingNum
+			         WHERE region IS NULL);
+	ELSE SIGNAL SQLSTATE '45000'
+    		SET MESSAGE_TEXT = 'Invalid Input';
+    END IF;
+RETURN total;
+END $$
+DELIMITER ;
+
+SET SQL_SAFE_UPDATES=0;
