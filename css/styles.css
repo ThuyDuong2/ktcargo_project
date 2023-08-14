@@ -1,9 +1,9 @@
 body{
   font-family: "Montserrat", sans-serif;
-  background-color: #fff;
+  background-color: #4477CE;
 }
 #title{
-  background-color:#393e46;
+  background-color:#89a5d3;
   color: #fff;
 }
 .container-fluid{
@@ -62,6 +62,10 @@ font-weight: bold;
 color: #fff;
 }
 
+.mx-auto {
+  max-width: 35rem;
+}
+
 
 .nav-link{
   font-size: 1.0rem;
@@ -117,25 +121,36 @@ margin-top: 0;
 
 }
 
-@media screen and (max-width: 1000px) {
-  .topnav .search-container {
-    float: none;
-  }
-  .topnav a, .topnav input[type=text], .topnav .search-container button {
-    float: none;
-    display: block;
-    text-align: left;
-    width: 100%;
-    margin: 12px;
-    padding: 14px;
-  }
-  .topnav input[type=text] {
-    border: 1px solid #ccc;
-  }
-  /* Testimonial image tile */
-.testimonial-image{
-position:static;
 
-  margin-top: 20px;
+.section-intro {
+  margin-top: 70px; /* Adjust this margin to leave space for the navigation bar */
+}
 
-  border-bottom: 50%;
+.container .row .col-md-6 .card .bg-custom-customer {
+  background-color:#b8d7dc; /* Replace with your desired color code */
+}
+
+.container .row .col-md-6 .card .bg-custom-receiver {
+  background-color: #b8d7dc; /* Replace with your desired color code */
+}
+
+@media (max-width: 767px) {
+  .section-intro {
+    margin-top: 20px; /* Adjust for smaller screens */
+  }
+}
+
+/* Small screens (max-width: 576px) */
+@media (max-width: 576px) {
+  /* Styles for small screens */
+}
+
+/* Medium screens (min-width: 577px) and large screens (max-width: 992px) */
+@media (min-width: 577px) and (max-width: 992px) {
+  /* Styles for medium screens */
+}
+
+/* Large screens (min-width: 993px) */
+@media (min-width: 993px) {
+  /* Styles for large screens */
+}
